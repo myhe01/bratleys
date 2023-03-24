@@ -9,7 +9,7 @@ all: $(PROJ)
 	$(CXX) $(CXXFLAGS) -c -o $@ $< 
 
 $(PROJ): $(OBJ)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@.out $^
 
 clean: 
 	rm $(PROJ) $(OBJ)

@@ -1,15 +1,18 @@
 #ifndef TREE_H
 #define TREE_H
 
+#include <memory>
 #include "node.hh"
 
 class Tree {
     public:
+        // Constructor/destructor
         Tree();
         ~Tree();
 
     private:
-        Node& root;
+        // Root of the treee
+        std::shared_ptr<Node> root;
 
         // Metadata
         int n_depth;
