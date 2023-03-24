@@ -1,7 +1,7 @@
 CXX 		= g++
 CXXFLAGS 	= -g -std=c++2a
 PROJ 		= bratleys
-OBJ	 		= main.o job.o # node.o tree.o
+OBJ	 		= main.o job.o node.o # tree.o
 
 all: $(PROJ)
 
@@ -12,4 +12,4 @@ $(PROJ): $(OBJ)
 	$(CXX) $(CXXFLAGS) -o $@.out $^
 
 clean: 
-	rm $(PROJ) $(OBJ)
+	rm $(PROJ).out $(OBJ)

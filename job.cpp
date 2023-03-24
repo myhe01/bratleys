@@ -1,13 +1,10 @@
-//#include <cstdio>
-#include <iostream>
-//#include <string>
 #include "job.hh"
 
 // Constructor
 Job::Job(int const a_task_number, int const a_arrival_time,
          int const a_computation_time, int const a_deadline)
          : task_number(a_task_number), arrival_time(a_arrival_time),
-           computation_time(a_computation_time), deadline(a_deadline)
+         computation_time(a_computation_time), deadline(a_deadline)
 {
 }
 
