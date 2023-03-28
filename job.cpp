@@ -3,42 +3,25 @@
 // Constructor
 Job::Job(int const a_task_number, int const a_arrival_time,
          int const a_computation_time, int const a_deadline)
-         : task_number(a_task_number), arrival_time(a_arrival_time),
-         computation_time(a_computation_time), deadline(a_deadline)
-{
-}
+         : TASK_NUMBER(a_task_number), ARRIVAL_TIME(a_arrival_time),
+         COMPUTATION_TIME(a_computation_time), DEADLINE(a_deadline)
+{}
 
 // Setters and getters
-void Job::setTaskNumber(int const a_task_number) {
-    task_number = a_task_number;
+int const Job::getTaskNumber(void) {
+    return TASK_NUMBER;
 }
 
-int Job::getTaskNumber(void) {
-    return task_number;
+int const Job::getArrivalTime(void) {
+    return ARRIVAL_TIME;
 }
 
-void Job::setArrivalTime(int const a_arrival_time) {
-    arrival_time = a_arrival_time;
+int const Job::getComputationTime(void) {
+    return COMPUTATION_TIME;
 }
 
-int Job::getArrivalTime(void) {
-    return arrival_time;
-}
-
-void Job::setComputationTime(int const a_computation_time) {
-    computation_time = a_computation_time;
-}
-
-int Job::getComputationTime(void) {
-    return computation_time;
-}
-
-void Job::setDeadline(int const a_deadline) {
-    deadline = a_deadline;
-}
-
-int Job::getDeadline(void) {
-    return deadline;
+int const Job::getDeadline(void) {
+    return DEADLINE;
 }
 
 // Overload << to output class to stream
