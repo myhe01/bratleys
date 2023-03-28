@@ -143,4 +143,3 @@ void Node::clearChildren(void) {
         elem->setParent(nullptr);
     }
 }
-
