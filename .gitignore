@@ -30,6 +30,7 @@
 *.exe
 *.out
 *.app
+bratleys
 
 # VSCode
 *.code-workspace
