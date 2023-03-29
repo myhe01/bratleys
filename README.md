@@ -22,27 +22,33 @@ make
 Finally, you're able to run the simulator with the below command and its arguments.
 
 ```
-./bratleys n
+./bratleys NUM_JOBS [-a minarrival] [-A maxarrival] [-c mincomp] [-C maxcomp] [-d mindeadline] [-D maxdeadline] [-s seed]
 ```
 
-Where: 
-- `n` is replaced with a positive integer specifying the number of jobs the user wishes to create
+#### Arguments
+- `NUM_JOBS` is a positive integer specifying the number of jobs the user wishes to create
 
-For example, executing `./bratleys 6` will create 6 random jobs. The created jobs will be printed to `stdout`, and will show the user their arrival time, computation time, and absolute deadline. 
+#### Options
+- `-a` allows the user to set the minimum arrival time of any one job by replacing `minarrival` with a positive integer
+- `-A` allows the user to set the maximum arrival time of any one job by replacing `maxarrival` with a positive integer
+- `-c` allows the user to set the minimum computation time of any one job by replacing `mincomp` with a positive integer
+- `-C` allows the user to set the maximum computation time of any one job by replacing `maxcomp` with a positive integer
+- `-d` allows the user to set the minimum absolute deadline of any one job by replacing `mindeadline` with a positive integer
+- `-D` allows the user to set the maximum absolute deadline of any one job by replacing `maxdeadline` with a positive integer
+- `-s` allows the user to set the seed of the random number generator by replacing `seed` with a positive integer
 
-The user is able to limit those three variables by specifying additional arguments.
+#### Defaults
+If specific options are not specified, they will default to the following values
 
-```
-./bratleys n a c d
-```
-
-Where:
-- `n` is a positive integer specifying the number of jobs
-- `a` is a positive integer specifying the maximum arrival time of any one job
-- `c` is a positive integer specifying the maximum computation time of any one job
-- `d` is a positive integer specifying the maximum absolute deadline of any one job
-
-For example, executing `./bratleys 4 2 5 23` will create 4 random jobs with arrival times between $0 \leq a_i \leq 2$, computation times between $0 \leq C_i \leq 5$, and absolute deadlines between $0 \leq d_i \leq 23$.
+| Option | Variable      | Default Value               |
+| -----  | ------------- | --------------------------- |
+| `-a`   | `minarrival`  | 0                           |
+| `-A`   | `maxarrival`  | INT_MAX                     |
+| `-c`   | `mincomp`     | 0                           |
+| `-C`   | `maxcomp`     | INT_MAX                     |
+| `-d`   | `mindeadline` | 0                           |
+| `-D`   | `maxdeadline` | INT_MAX                     |
+| `-s`   | `seed`        | Current Unix time (seconds) |
 
 ### As a Library
 Code may be used in accordance with the license. `node.cpp` and `node.hh`
@@ -59,7 +65,7 @@ Code may be used in accordance with the license. `node.cpp` and `node.hh`
     - Complete *Usage, As a Library*
     - Complete *To-do List*
 - **main**
-    - Parse user arguments
+    - Parse user arguments (complete)
     - Limit arrival times, computation time, and deadlines
     - Create list of random Jobs based on user arguments
     - Create list of Nodes based on list of random Jobs created
@@ -89,6 +95,11 @@ Code may be used in accordance with the license. `node.cpp` and `node.hh`
             - If $f_i > d_i$, return up to the Node before the last Node, root check
             - Else continue until list of Nodes is exhausted
         - Return realizable schedule
+
+## Ideas
+- Remove Nodes as we determine that they lead to an unrealizable schedule
+- Allow user to also pass lower limit for arrival time, computation time, and deadline
+- Allow user to pass a seed
 
 ## Contributing
 

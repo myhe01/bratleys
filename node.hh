@@ -28,6 +28,12 @@ class Node : public std::enable_shared_from_this<Node> {
         // Returns this Node's job's TASK_NUMBER
         int getJobTaskNumber(void);
 
+        int getJobArrivalTime(void);
+
+        int getJobComputationTime(void);
+
+        int getJobDeadline(void);
+
         // Inserts a child Node onto vector children sorted by job task number
         void insertChild(std::shared_ptr<Node> push_child);
 

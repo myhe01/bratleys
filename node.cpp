@@ -53,6 +53,18 @@ int Node::getJobTaskNumber(void) {
     return job->getTaskNumber();
 }
 
+int Node::getJobArrivalTime(void) {
+    return job->getArrivalTime();
+}
+
+int Node::getJobComputationTime(void) {
+    return job->getComputationTime();
+}
+
+int Node::getJobDeadline(void) {
+    return job->getDeadline();
+}
+
 // Inserts a child Node onto vector children at position getTaskNumber()
 void Node::insertChild(std::shared_ptr<Node> push_child) {
     // If children is empty, we'll insert our first element
