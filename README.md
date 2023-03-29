@@ -51,7 +51,7 @@ If specific options are not specified, they will default to the following values
 | `-s`   | `seed`        | Current Unix time (seconds) |
 
 ### As a Library
-Code may be used in accordance with the license. `node.cpp` and `node.hh`
+Code may be used in accordance with the license.
 
 | Topic | Code        | Header    |
 | ----- | ----------- | --------- |
