@@ -5,6 +5,7 @@
 #include <iostream>
 #include <limits>
 #include <memory>
+#include <random>
 #include <unistd.h>
 
 // User includes
@@ -12,21 +13,33 @@
 #include "node.hh"
 #include "tree.hh"
 
+// Global variables
+std::string prog_name;
+
+int const DEFAULT_JOBS                  = 0;
+int const DEFAULT_MIN_ARRIVAL_TIME      = 0;
+int const DEFAULT_MAX_ARRIVAL_TIME      = std::numeric_limits<int>::max();
+int const DEFAULT_MIN_COMPUTATION_TIME  = 0;
+int const DEFAULT_MAX_COMPUTATION_TIME  = std::numeric_limits<int>::max();
+int const DEFAULT_MIN_DEADLINE          = 0;
+int const DEFAULT_MAX_DEADLINE          = std::numeric_limits<int>::max();
+int const DEFAULT_SEED                  = std::time(nullptr);
+
+typedef struct arguments {
+    int jobs                            = DEFAULT_JOBS;
+    int min_arrival_time                = DEFAULT_MIN_ARRIVAL_TIME;
+    int max_arrival_time                = DEFAULT_MAX_ARRIVAL_TIME;
+    int min_computation_time            = DEFAULT_MIN_COMPUTATION_TIME;
+    int max_computation_time            = DEFAULT_MAX_COMPUTATION_TIME;
+    int min_deadline                    = DEFAULT_MIN_DEADLINE;
+    int max_deadline                    = DEFAULT_MAX_DEADLINE;
+    int seed                            = DEFAULT_SEED;
+} arguments_t;
+
 // Function prototypes
 int check_arg(std::string argument);
-int parse_arg(int argc, char * argv[], int * arguments);
+int parse_arg(int argc, char * argv[], arguments_t * arguments);
 int main(int argc, char * argv[]);
-
-// Global variables
-int const DEFAULT_JOBS = 0;
-int const DEFAULT_MIN_ARRIVAL_TIME = 0;
-int const DEFAULT_MAX_ARRIVAL_TIME = std::numeric_limits<int>::max();
-int const DEFAULT_MIN_COMPUTATION_TIME = 0;
-int const DEFAULT_MAX_COMPUTATION_TIME = std::numeric_limits<int>::max();
-int const DEFAULT_MIN_DEADLINE = 0;
-int const DEFAULT_MAX_DEADLINE = std::numeric_limits<int>::max();
-int const DEFAULT_SEED = std::time(nullptr);
-std::string prog_name;
 
 // Check if integer passed is a valid argument
 int check_arg(std::string argument) {
@@ -61,9 +74,7 @@ int check_arg(std::string argument) {
 }
 
 // Abstract parsing of command line arguments away from main()
-int parse_arg(int argc, char * argv[], int * arguments) {
-    int const MY_INT_MAX = std::numeric_limits<int>::max();
-    int const MY_EPOCH_TIME = std::time(nullptr);
+int parse_arg(int argc, char * argv[], arguments_t * arguments) {
     int opt, temp;
 
     // Set global prog_name to program name
@@ -76,7 +87,7 @@ int parse_arg(int argc, char * argv[], int * arguments) {
             case 'a':
                 temp = check_arg(optarg);
                 if (temp >= 0) {
-                    arguments[1] = temp;
+                    arguments->min_arrival_time = temp;
                 }
                 break;
 
@@ -84,7 +95,7 @@ int parse_arg(int argc, char * argv[], int * arguments) {
             case 'A':
                 temp = check_arg(optarg);
                 if (temp >= 0) {
-                    arguments[2] = temp;
+                    arguments->max_arrival_time = temp;
                 }
                 break;
 
@@ -92,7 +103,7 @@ int parse_arg(int argc, char * argv[], int * arguments) {
             case 'c':
                 temp = check_arg(optarg);
                 if (temp >= 0) {
-                    arguments[3] = temp;
+                    arguments->min_computation_time = temp;
                 }
                 break;
                 
@@ -100,7 +111,7 @@ int parse_arg(int argc, char * argv[], int * arguments) {
             case 'C':
                 temp = check_arg(optarg);
                 if (temp >= 0) {
-                    arguments[4] = temp;
+                    arguments->max_computation_time = temp;
                 }
                 break;
             
@@ -108,7 +119,7 @@ int parse_arg(int argc, char * argv[], int * arguments) {
             case 'd':
                 temp = check_arg(optarg);
                 if (temp >= 0) {
-                    arguments[5] = temp;
+                    arguments->min_deadline = temp;
                 }
                 break;
 
@@ -116,7 +127,7 @@ int parse_arg(int argc, char * argv[], int * arguments) {
             case 'D':
                 temp = check_arg(optarg);
                 if (temp >= 0) {
-                    arguments[6] = temp;
+                    arguments->max_deadline = temp;
                 }
                 break;
 
@@ -124,7 +135,7 @@ int parse_arg(int argc, char * argv[], int * arguments) {
             case 's':
                 temp = check_arg(optarg);
                 if (temp >= 0) {
-                    arguments[7] = temp;
+                    arguments->seed = temp;
                 }
                 break;
         }
@@ -146,7 +157,7 @@ int parse_arg(int argc, char * argv[], int * arguments) {
     else if (argc - 1 == optind) {
         temp = check_arg(argv[optind++]);
         if (temp >= 0) {
-            arguments[0] = temp;
+            arguments->jobs = temp;
         }
     }
 
@@ -155,31 +166,39 @@ int parse_arg(int argc, char * argv[], int * arguments) {
 
 // Main
 int main(int argc, char * argv[]) {
-    int arguments[8] = {DEFAULT_JOBS, DEFAULT_MIN_ARRIVAL_TIME,
-                        DEFAULT_MAX_ARRIVAL_TIME, DEFAULT_MIN_COMPUTATION_TIME,
-                        DEFAULT_MAX_COMPUTATION_TIME, DEFAULT_MIN_DEADLINE,
-                        DEFAULT_MAX_DEADLINE, DEFAULT_SEED};
+    arguments_t arguments;
     
     // Parse command line arguments
-    if (parse_arg(argc, argv, arguments) < 0) {
+    if (parse_arg(argc, argv, &arguments) < 0) {
         return EXIT_FAILURE;
     }
 
-    // Initialize a tree with our command line arguments
-    Tree tr(arguments[0], arguments[1], arguments[2], arguments[3], 
-            arguments[4], arguments[5], arguments[6], arguments[7]);
+    // Initialize RNG with command line arguments
+    std::mt19937 rng(arguments.seed);
+    std::uniform_int_distribution<std::mt19937::result_type> arrival_time(
+        arguments.min_arrival_time, arguments.max_arrival_time
+    );
+    std::uniform_int_distribution<std::mt19937::result_type> computation_time(
+        arguments.min_computation_time, arguments.max_computation_time
+    );
+    std::uniform_int_distribution<std::mt19937::result_type> deadline(
+        arguments.min_deadline, arguments.max_deadline
+    );
 
-    // Print out options
-    std::cout << "Jobs:   " << arguments[0] << std::endl;
-    std::cout << "Min ai: " << arguments[1] << std::endl;
-    std::cout << "Max ai: " << arguments[2] << std::endl;
-    std::cout << "Min ci: " << arguments[3] << std::endl;
-    std::cout << "Max ci: " << arguments[4] << std::endl;
-    std::cout << "Min di: " << arguments[5] << std::endl;
-    std::cout << "Max di: " << arguments[6] << std::endl;
-    std::cout << "Seed:   " << arguments[7] << std::endl;
+    // Create list of jobs with random parameters
+    std::vector<std::shared_ptr<Job>> jobs_list;
+    for (int i = 0; i < arguments.jobs; i++) {
+        jobs_list.push_back(std::make_shared<Job>(i, arrival_time(rng),
+                            computation_time(rng), deadline(rng)));
+    }
 
+    Tree tr();
 
+    for (std::shared_ptr<Job> j : jobs_list) {
+        std::cout << *j << std::endl;
+    }
+
+    /*
     std::shared_ptr<Job> j0 = std::make_shared<Job>(0, 0, 2, 2);
     std::shared_ptr<Job> j1 = std::make_shared<Job>(1, 1, 2, 3);
     std::shared_ptr<Job> j2 = std::make_shared<Job>(2, 3, 4, 5);
@@ -212,6 +231,6 @@ int main(int argc, char * argv[]) {
 
     std::cout << "CLEARED" << std::endl;
     n0->debugPrintChildren();
-
+    */
     return EXIT_SUCCESS;
 }   

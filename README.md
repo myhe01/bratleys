@@ -66,10 +66,10 @@ Code may be used in accordance with the license.
     - Complete *To-do List*
 - **main**
     - Parse user arguments (complete)
-    - Limit arrival times, computation time, and deadlines
-    - Create list of random Jobs based on user arguments
+    - Limit arrival times, computation time, and deadlines (complete)
+    - Create list of random Jobs based on user arguments (complete)
     - Create list of Nodes based on list of random Jobs created
-    - Create Tree with empty root
+    - Create Tree with empty root (complete)
     - Determine realizable schedule
         - Print schedule if realizable
         - Tell user if no realizable schedule exists
@@ -77,7 +77,7 @@ Code may be used in accordance with the license.
     - Constructor (complete)
     - Getters and setters (complete)
     - Parse for an ostream (complete)
-- **Node**
+- **Node** (complete)
     - Constructor (complete)
     - Getters and setters (complete)
     - Parse for an ostream (complete)
@@ -86,8 +86,8 @@ Code may be used in accordance with the license.
     - `removeChild()` (complete)
     - `clearChildren()` (complete)
 - **Tree**
-    - Constructor
-    - Getters and setters
+    - Constructor (complete)
+    - Getters and setters (complete)
     - `clearTree()`
     - Scheduling algorithm
         - Receive list of Nodes
@@ -98,8 +98,8 @@ Code may be used in accordance with the license.
 
 ## Ideas
 - Remove Nodes as we determine that they lead to an unrealizable schedule
-- Allow user to also pass lower limit for arrival time, computation time, and deadline
-- Allow user to pass a seed
+- ~~Allow user to also pass lower limit for arrival time, computation time, and deadline~~
+- ~~Allow user to pass a seed~~
 
 ## Contributing
 
