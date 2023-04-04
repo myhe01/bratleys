@@ -1,5 +1,5 @@
-#include "node.hh"
 #include "job.hh"
+#include "node.hh"
 
 // Constructors
 Node::Node(std::shared_ptr<Job> a_job, std::shared_ptr<Node> a_parent,
