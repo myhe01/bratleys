@@ -1,13 +1,48 @@
+// Library includes
+#include <array>
+#include <chrono>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <limits>
 #include <memory>
+#include <random>
 #include <unistd.h>
+
+// User includes
 #include "job.hh"
 #include "node.hh"
+#include "tree.hh"
 
+// Global constants
+int const DEFAULT_JOBS                  = 0;
+int const DEFAULT_MIN_ARRIVAL_TIME      = 0;
+int const DEFAULT_MAX_ARRIVAL_TIME      = std::numeric_limits<int>::max();
+int const DEFAULT_MIN_COMPUTATION_TIME  = 0;
+int const DEFAULT_MAX_COMPUTATION_TIME  = std::numeric_limits<int>::max();
+int const DEFAULT_MIN_DEADLINE          = 0;
+int const DEFAULT_MAX_DEADLINE          = std::numeric_limits<int>::max();
+int const DEFAULT_SEED                  = std::time(nullptr);
+
+// Global variables
 std::string prog_name;
+
+// Arguments struct
+typedef struct arguments {
+    int jobs                            = DEFAULT_JOBS;
+    int min_arrival_time                = DEFAULT_MIN_ARRIVAL_TIME;
+    int max_arrival_time                = DEFAULT_MAX_ARRIVAL_TIME;
+    int min_computation_time            = DEFAULT_MIN_COMPUTATION_TIME;
+    int max_computation_time            = DEFAULT_MAX_COMPUTATION_TIME;
+    int min_deadline                    = DEFAULT_MIN_DEADLINE;
+    int max_deadline                    = DEFAULT_MAX_DEADLINE;
+    int seed                            = DEFAULT_SEED;
+} arguments_t;
+
+// Function prototypes
+int check_arg(std::string argument);
+int parse_arg(int argc, char * argv[], arguments_t * arguments);
+int main(int argc, char * argv[]);
 
 // Check if integer passed is a valid argument
 int check_arg(std::string argument) {
@@ -41,59 +76,45 @@ int check_arg(std::string argument) {
     return ret;
 }
 
-int main(int argc, char *argv[]) {
+// Abstract parsing of command line arguments away from main()
+int parse_arg(int argc, char * argv[], arguments_t * arguments) {
+    int opt, temp;
+
     // Set global prog_name to program name
     prog_name = std::string(argv[0]);
-
-    int opt, temp;
-    int jobs = 0, seed = std::time(nullptr);
-    int max_arrival_time = std::numeric_limits<int>::max(),
-        max_computation_time = std::numeric_limits<int>::max(), 
-        max_deadline = std::numeric_limits<int>::max(),
-        min_arrival_time = 0,
-        min_computation_time = 0, 
-        min_deadline = 0;
 
     // Parse options
     while ((opt = getopt(argc, argv, "a:c:d:A:C:D:s:")) != -1) {
         switch (opt) {
-            // Maximum arrival time
-            case 'A':
-                temp = check_arg(optarg);
-                if (temp >= 0) {
-                    max_arrival_time = temp;
-                }
-                break;
-            
-            // Maximum computation time
-            case 'C':
-                temp = check_arg(optarg);
-                if (temp >= 0) {
-                    max_computation_time = temp;
-                }
-                break;
-            
-            // Maximum deadline
-            case 'D':
-                temp = check_arg(optarg);
-                if (temp >= 0) {
-                    max_deadline = temp;
-                }
-                break;
-
             // Minimum arrival time
             case 'a':
                 temp = check_arg(optarg);
                 if (temp >= 0) {
-                    min_arrival_time = temp;
+                    arguments->min_arrival_time = temp;
                 }
                 break;
-            
+
+            // Maximum arrival time
+            case 'A':
+                temp = check_arg(optarg);
+                if (temp >= 0) {
+                    arguments->max_arrival_time = temp;
+                }
+                break;
+
             // Minimum computation time
             case 'c':
                 temp = check_arg(optarg);
                 if (temp >= 0) {
-                    min_computation_time = temp;
+                    arguments->min_computation_time = temp;
+                }
+                break;
+                
+            // Maximum computation time
+            case 'C':
+                temp = check_arg(optarg);
+                if (temp >= 0) {
+                    arguments->max_computation_time = temp;
                 }
                 break;
             
@@ -101,15 +122,23 @@ int main(int argc, char *argv[]) {
             case 'd':
                 temp = check_arg(optarg);
                 if (temp >= 0) {
-                    min_deadline = temp;
+                    arguments->min_deadline = temp;
                 }
                 break;
-            
+
+            // Maximum deadline
+            case 'D':
+                temp = check_arg(optarg);
+                if (temp >= 0) {
+                    arguments->max_deadline = temp;
+                }
+                break;
+
             // Seed current UNIX time, else take user input
             case 's':
                 temp = check_arg(optarg);
                 if (temp >= 0) {
-                    seed = temp;
+                    arguments->seed = temp;
                 }
                 break;
         }
@@ -118,66 +147,88 @@ int main(int argc, char *argv[]) {
     // Too few arguments passed
     if (argc == optind) {
         std::cout << prog_name << ": too few arguments" << std::endl;
-        return EXIT_FAILURE;
+        return -1;
     }   
 
     // Too many arguments passed
     else if (argc - 1 > optind) {
         std::cout << prog_name << ": too many arguments" << std::endl;
-        return EXIT_FAILURE;
+        return -1;
     }
 
-    // Just enough arguments passed
+    // Just enough arguments passed, set jobs
     else if (argc - 1 == optind) {
         temp = check_arg(argv[optind++]);
         if (temp >= 0) {
-            jobs = temp;
+            arguments->jobs = temp;
         }
     }
 
-    // Print out options
-    std::cout << "Min ai: " << min_arrival_time << std::endl;
-    std::cout << "Max ai: " << max_arrival_time << std::endl;
-    std::cout << "Min ci: " << min_computation_time << std::endl;
-    std::cout << "Max ci: " << max_computation_time << std::endl;
-    std::cout << "Min di: " << min_deadline << std::endl;
-    std::cout << "Max di: " << max_deadline << std::endl;
-    std::cout << "Jobs:   " << jobs << std::endl;
-    std::cout << "Seed:   " << seed << std::endl;
+    // Check for "correctness"
+    if ((arguments->min_arrival_time > arguments->max_arrival_time) || 
+        (arguments->min_computation_time > arguments->max_computation_time) ||
+        (arguments->min_deadline > arguments->max_deadline))
+    {
+        std::cout << prog_name << ": incorrect arguments" << std::endl;
+        return -1;
+    }
 
-    //Tree t;
-    std::shared_ptr<Job> j0 = std::make_shared<Job>(0, 0, 2, 2);
-    std::shared_ptr<Job> j1 = std::make_shared<Job>(1, 1, 2, 3);
-    std::shared_ptr<Job> j2 = std::make_shared<Job>(2, 3, 4, 5);
-    std::shared_ptr<Job> j3 = std::make_shared<Job>(3, 4, 1, 2);
-    std::shared_ptr<Job> j4 = std::make_shared<Job>(4, 4, 2, 2);
+    return 0;
+}
 
-    std::shared_ptr<Node> n0 = std::make_shared<Node>(j0); // Problem here
-    std::shared_ptr<Node> n1 = std::make_shared<Node>(j1);
-    std::shared_ptr<Node> n2 = std::make_shared<Node>(j2);
-    std::shared_ptr<Node> n3 = std::make_shared<Node>(j3);
-    std::shared_ptr<Node> n4 = std::make_shared<Node>(j4);
+// Main
+int main(int argc, char * argv[]) {
+    auto timer_start = std::chrono::steady_clock::now();
+    arguments_t arguments;
     
-    n0->insertChild(n1);
-    n0->insertChild(n2);
-    n0->insertChild(n3);
-    n0->insertChild(n4);
+    // Parse command line arguments
+    if (parse_arg(argc, argv, &arguments) < 0) {
+        return EXIT_FAILURE;
+    }
 
-    std::cout << "BEFORE" << std::endl;
-    n0->debugPrintChildren();
+    // Initialize RNG with command line arguments
+    std::mt19937 rng(arguments.seed);
+    std::uniform_int_distribution<std::mt19937::result_type> arrival_time(
+        arguments.min_arrival_time, arguments.max_arrival_time
+    );
+    std::uniform_int_distribution<std::mt19937::result_type> computation_time(
+        arguments.min_computation_time, arguments.max_computation_time
+    );
+    std::uniform_int_distribution<std::mt19937::result_type> deadline(
+        arguments.min_deadline, arguments.max_deadline
+    );
 
-    std::shared_ptr<Node> removed = n0->removeChild(3);
+    // Create list of jobs with random parameters
+    std::vector<std::shared_ptr<Job>> jobs_list;
+    for (int i = 0; i < arguments.jobs; i++) {
+        jobs_list.push_back(std::make_shared<Job>(i, arrival_time(rng),
+                            computation_time(rng), deadline(rng)));
+    }
 
-    std::cout << "removed: " << *removed << std::endl;
-    std::cout << "removed's parent: " << removed->getParent() << std::endl; 
+    // Print jobs
+    std::cout << "------------------- Jobs to schedule: -------------------" << std::endl;
+    for (std::shared_ptr<Job> jo : jobs_list) {
+        std::cout << *jo << std::endl;
+    }
+    std::cout << "--------------------- End jobs list ---------------------" << std::endl;
+    std::cout << std::endl;
+    
+    // Run the Bratley's algorithm scheduler
+    Tree my_tr;
+    if (my_tr.runScheduler(jobs_list)) {
+        std::cout << "------------------- Feasible schedule: ------------------" << std::endl;
+        for (std::shared_ptr<Node> n : my_tr.getSchedule()) {
+            std::cout << *n << std::endl;
+        }
+        std::cout << "---------------------- End schedule ---------------------" << std::endl;
+        std::cout << "Overall finishing time: " << my_tr.getFinishingTime() << std::endl;
+    } else {
+        std::cout << "No feasible schedule found." << std::endl;
+    }
 
-    std::cout << "AFTER" << std::endl;
-    n0->debugPrintChildren();
-
-    n0->clearChildren();
-
-    std::cout << "CLEARED" << std::endl;
-    n0->debugPrintChildren();
+    // Print execution time
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - timer_start;
+    std::cout << "Execution time: " << elapsed.count() << "s" << std::endl;
 
     return EXIT_SUCCESS;
 }   

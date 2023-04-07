@@ -65,41 +65,42 @@ Code may be used in accordance with the license.
     - Complete *Usage, As a Library*
     - Complete *To-do List*
 - **main**
-    - Parse user arguments (complete)
-    - Limit arrival times, computation time, and deadlines
-    - Create list of random Jobs based on user arguments
+    - Parse user arguments :heavy_check_mark:
+    - Check arguments for compatibility (e.g. make sure min <= max)
+    - Limit arrival times, computation time, and deadlines :heavy_check_mark:
+    - Create list of random Jobs based on user arguments :heavy_check_mark:
     - Create list of Nodes based on list of random Jobs created
-    - Create Tree with empty root
+    - Create Tree with empty root :heavy_check_mark:
     - Determine realizable schedule
         - Print schedule if realizable
         - Tell user if no realizable schedule exists
-- **Job** (complete)
-    - Constructor (complete)
-    - Getters and setters (complete)
-    - Parse for an ostream (complete)
-- **Node**
-    - Constructor (complete)
-    - Getters and setters (complete)
-    - Parse for an ostream (complete)
-    - `getJobTaskNumber()` (complete)
-    - `insertChild()` (complete)
-    - `removeChild()` (complete)
-    - `clearChildren()` (complete)
+- **Job** :heavy_check_mark:
+    - Constructor :heavy_check_mark:
+    - Getters and setters :heavy_check_mark:
+    - Parse for an ostream :heavy_check_mark:
+- **Node** :heavy_check_mark:
+    - Constructor :heavy_check_mark:
+    - Getters and setters :heavy_check_mark:
+    - Parse for an ostream :heavy_check_mark:
+    - `getJobTaskNumber()` :heavy_check_mark:
+    - `insertChild()` :heavy_check_mark:
+    - `removeChild()` :heavy_check_mark:
+    - `clearChildren()` :heavy_check_mark:
 - **Tree**
-    - Constructor
-    - Getters and setters
-    - `clearTree()`
+    - Constructor :heavy_check_mark:
+    - Getters and setters :heavy_check_mark:
     - Scheduling algorithm
-        - Receive list of Nodes
+        - Receive list of Nodes 
         - Push Node onto tree, check if finish time exceeds deadline
             - If $f_i > d_i$, return up to the Node before the last Node, root check
             - Else continue until list of Nodes is exhausted
-        - Return realizable schedule
+        - Return realizable schedule :heavy_check_mark:
+    - Polish functions
 
 ## Ideas
-- Remove Nodes as we determine that they lead to an unrealizable schedule
-- Allow user to also pass lower limit for arrival time, computation time, and deadline
-- Allow user to pass a seed
+- ~~Remove Nodes as we determine that they lead to an unrealizable schedule~~ :heavy_check_mark:
+- ~~Allow user to also pass lower limit for arrival time, computation time, and deadline~~ :heavy_check_mark:
+- ~~Allow user to pass a seed~~ :heavy_check_mark:
 
 ## Contributing
 
