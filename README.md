@@ -61,19 +61,24 @@ Code may be used in accordance with the license.
 | Tree  | `tree.cpp`  | `tree.hh` |
 
 ## To-do List
-- **README**
+- **Documentation**
     - Complete *Usage, As a Library*
-    - Complete *To-do List*
-- **main**
+    - Complete *To-do List* :heavy_check_mark:
+    - Document `main.cpp`
+    - Document `job.*`
+    - Document `node.*`
+    - Document `node.*`
+- **main** :heavy_check_mark:
     - Parse user arguments :heavy_check_mark:
-    - Check arguments for compatibility (e.g. make sure min <= max)
+    - Check arguments for compatibility and correctness :heavy_check_mark:
     - Limit arrival times, computation time, and deadlines :heavy_check_mark:
     - Create list of random Jobs based on user arguments :heavy_check_mark:
-    - Create list of Nodes based on list of random Jobs created
     - Create Tree with empty root :heavy_check_mark:
-    - Determine realizable schedule
-        - Print schedule if realizable
-        - Tell user if no realizable schedule exists
+    - Determine realizable schedule :heavy_check_mark:
+        - Print schedule if realizable :heavy_check_mark:
+            - Determine overall finishing time :heavy_check_mark:
+        - Tell user if no realizable schedule exists :heavy_check_mark:
+    - Measure execution time :heavy_check_mark:
 - **Job** :heavy_check_mark:
     - Constructor :heavy_check_mark:
     - Getters and setters :heavy_check_mark:
@@ -83,19 +88,20 @@ Code may be used in accordance with the license.
     - Getters and setters :heavy_check_mark:
     - Parse for an ostream :heavy_check_mark:
     - `getJobTaskNumber()` :heavy_check_mark:
-    - `insertChild()` :heavy_check_mark:
-    - `removeChild()` :heavy_check_mark:
-    - `clearChildren()` :heavy_check_mark:
-- **Tree**
+    - `getJobArrivalTime()` :heavy_check_mark:
+    - `getJobComputationTime()` :heavy_check_mark:
+    - `getJobDeadline()` :heavy_check_mark:
+- **Tree** :heavy_check_mark:
     - Constructor :heavy_check_mark:
     - Getters and setters :heavy_check_mark:
-    - Scheduling algorithm
-        - Receive list of Nodes 
-        - Push Node onto tree, check if finish time exceeds deadline
-            - If $f_i > d_i$, return up to the Node before the last Node, root check
-            - Else continue until list of Nodes is exhausted
+    - `runScheduler()` (abstract start of scheduling algorithm) :heavy_check_mark:
+    - `scheduleJobs()` (recursive scheduling algorithm) :heavy_check_mark:
+        - Receive list of Nodes :heavy_check_mark:
+        - Construct next Node, check if next Node's finish time exceeds deadline :heavy_check_mark:
+            - If $f_i > d_i$, deconstruct the Node and try the next Job from the list :heavy_check_mark:
+                - If list of Jobs exhausted, return up to the parent Node
+            - Else continue until list of Nodes is exhausted :heavy_check_mark:
         - Return realizable schedule :heavy_check_mark:
-    - Polish functions
 
 ## Ideas
 - ~~Remove Nodes as we determine that they lead to an unrealizable schedule~~ :heavy_check_mark:
