@@ -99,7 +99,7 @@ Code may be used in accordance with the license.
         - Receive list of Nodes :heavy_check_mark:
         - Construct next Node, check if next Node's finish time exceeds deadline :heavy_check_mark:
             - If $f_i > d_i$, deconstruct the Node and try the next Job from the list :heavy_check_mark:
-                - If list of Jobs exhausted, return up to the parent Node
+                - If list of Jobs exhausted, return up to the parent Node  :heavy_check_mark:
             - Else continue until list of Nodes is exhausted :heavy_check_mark:
         - Return realizable schedule :heavy_check_mark:
 
