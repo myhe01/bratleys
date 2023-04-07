@@ -13,16 +13,14 @@ class Tree {
         // Setters and getters
         std::shared_ptr<Node>& getRoot(void);
         std::vector<std::shared_ptr<Node>> getSchedule(void);
-        void setTime(int a_time);
-        int getTime(void);
-        void setNDepth(int a_n_depth);
-        int getNDepth(void);
-        void setNLeaves(int a_n_leaves);
-        int getNLaves(void);
-        void setNNodes(int a_n_nodes);
-        int getNNodes(void);
+        void setFinishingTime(int a_time);
+        int getFinishingTime(void);
 
         // Class functions
+        // Run the scheduler. Returns true if feasible schedule found, false if
+        // not.
+        bool runScheduler(std::vector<std::shared_ptr<Job>>& job_list);
+
         // Task to run the scheduling algorithm for the tree
         std::vector<std::shared_ptr<Job>> scheduleJobs(
             std::shared_ptr<Node>& current_node,
@@ -34,14 +32,7 @@ class Tree {
         std::vector<std::shared_ptr<Node>> schedule;
 
         // Overall finishing time
-        int time;
-
-        // Metadata
-        int n_depth;
-        int n_leaves;
-        int n_nodes;
+        int finishing_time;
 };
-
-void print_vector(std::vector<std::shared_ptr<Job>>& vec);
 
 #endif // TREE_H

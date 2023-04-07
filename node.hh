@@ -30,24 +30,10 @@ class Node : public std::enable_shared_from_this<Node> {
         int getJobArrivalTime(void);
         int getJobComputationTime(void);
         int getJobDeadline(void);
-
-        // Inserts a child Node onto vector children sorted by job task number
-        void insertChild(std::shared_ptr<Node> push_child);
-
-        // Removes a child Node with the corresponding job task number from
-        // vector children, returns the Node removed
-        std::shared_ptr<Node> removeChild(int const job_task_number);
-
-        // Clears vector children
-        void clearChildren(void);
-
-        // DEBUG: print children
-        void debugPrintChildren(void);
     private:
         // Class variables
         std::shared_ptr<Job> job;
         std::shared_ptr<Node> parent;
-        std::vector<std::shared_ptr<Node>> children;
         int finish_time;
 };
 

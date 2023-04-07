@@ -1,3 +1,5 @@
+#include <algorithm> 
+
 #include "job.hh"
 #include "node.hh"
 #include "tree.hh"
@@ -5,7 +7,7 @@
 // Constructor
 Tree::Tree(void) : root(std::make_shared<Node>(std::make_shared<Job>(-1, -1,
                                                                      -1, -1))),
-                   time(0)
+                   finishing_time(0)
 {
     root->setFinishTime(0);
 }
@@ -19,36 +21,36 @@ std::vector<std::shared_ptr<Node>> Tree::getSchedule(void) {
     return schedule;
 }
 
-void Tree::setTime(int a_time) {
-    time = a_time;
+void Tree::setFinishingTime(int a_finishing_time) {
+    finishing_time = a_finishing_time;
 }
 
-int Tree::getTime(void) {
-    return time;
+int Tree::getFinishingTime(void) {
+    return finishing_time;
 }
 
-void Tree::setNDepth(int a_n_depth) {
-    n_depth = a_n_depth;
-}
+// Class functions
+// Run the scheduler. Returns true if feasible schedule found, false if
+// not.
+bool Tree::runScheduler(std::vector<std::shared_ptr<Job>>& job_list) {
+    std::vector<std::shared_ptr<Job>> remaining;
+    remaining = scheduleJobs(root, job_list);
 
-int Tree::getNDepth(void) {
-    return n_depth;
-}
+    // No feasible schedule found
+    if (!remaining.empty()) {
+        return false;
+    } 
+    
+    // Feasible schedule found
+    else {
+        // Remove root from schedule
+        schedule.pop_back();
 
-void Tree::setNLeaves(int a_n_leaves) {
-    n_leaves = a_n_leaves;
-}
+        // Reverse vector
+        std::reverse(schedule.begin(), schedule.end());
+    }
 
-int Tree::getNLaves(void) {
-    return n_leaves;
-}
-
-void Tree::setNNodes(int a_n_nodes) {
-    n_nodes = a_n_nodes;
-}
-
-int Tree::getNNodes(void) {
-    return n_nodes;
+    return true;
 }
 
 // Task to run the scheduling algorithm for the tree
@@ -56,12 +58,6 @@ std::vector<std::shared_ptr<Job>> Tree::scheduleJobs(
     std::shared_ptr<Node>& current_node,
     std::vector<std::shared_ptr<Job>>& job_list)
 {
-    //std::cout << std::endl << "-- scheduleJobs --" << std::endl;
-    //std::cout << "current_node: " << *current_node << std::endl;
-    //std::cout << "jobsList:" << std::endl;
-    //print_vector(job_list);
-    //std::cout << std::endl;
-
     // Base case
     if (current_node == nullptr) {
         return job_list;
@@ -69,21 +65,16 @@ std::vector<std::shared_ptr<Job>> Tree::scheduleJobs(
 
     if (job_list.empty()) {
         // Set base case
-        //next_node = nullptr;      // FIXME: i think we don't need this
-
         schedule.push_back(current_node);
-        //std::cout << "pushing base case " << *(current_node->getJob()) << std::endl;
+
+        finishing_time = current_node->getFinishTime();
+
         return job_list;
     }
     
     auto job_iter = job_list.begin();
     
     for (job_iter; job_iter < job_list.end(); job_iter++) {
-        //std::cout << "&& checking: " << **job_iter << std::endl;
-        //std::cout << "&& jobsList:" << std::endl;
-        //print_vector(job_list);
-        //std::cout << std::endl;
-
         // Make current node from the job we're testing
         std::shared_ptr<Node> next_node = std::make_shared<Node>(*job_iter);
 
@@ -97,27 +88,13 @@ std::vector<std::shared_ptr<Job>> Tree::scheduleJobs(
         f_time += next_node->getJobComputationTime();
 
         // If finishing time is too long for the next node, then move to the 
-        // next job from the list
-        if (f_time > next_node->getJobDeadline()) {
-            //std::cout << "$$ job_list size: " << job_list.size() << std::endl;
-            //std::cout << "$$ job_iter on " << **job_iter << std::endl;
-            //std::cout << "$$ list.empty(): " << job_list.empty() << std::endl;
-            
-            //std::cout << "finish time too big, " << *next_node << std::endl;
-            //std::cout << "jobs left to check: " << std::endl;
-            //print_vector(job_list);
-        }
-
-        // However if this node is feasible, then we can check the nodes under
-        // it
-        else {
+        // next job from the list. However if this node is feasible, then we
+        // can check the nodes under it
+        if (f_time <= next_node->getJobDeadline()) {
             job_iter = job_list.erase(job_iter);
             next_node->setFinishTime(f_time);
             next_node->setParent(current_node);
 
-            //std::cout << "finish time good, " << *next_node << std::endl;
-            //std::cout << "trying next node..." << std::endl;
-            
             std::vector<std::shared_ptr<Job>> ret_vector =
                 scheduleJobs(next_node, job_list);
 
@@ -129,12 +106,6 @@ std::vector<std::shared_ptr<Job>> Tree::scheduleJobs(
                 // current node works, then we know the schedule failed and we need to
                 // try another job from the job list.
                 job_list.insert(job_iter, next_node->getJob());
-
-
-                
-                //std::cout << "%% reinserted " << *(next_node->getJob()) << std::endl;
-                //std::cout << "%% job list vector:" << std::endl;
-                //print_vector(job_list);
             } 
 
             // Else if it is empty, then we have a feasible schedule and need to add
@@ -146,14 +117,6 @@ std::vector<std::shared_ptr<Job>> Tree::scheduleJobs(
         }
     }
 
-
-    //std::cout << "## returning from the bottom" << std::endl << std::endl;
     // If we've exhausted all options, then return our job list
     return job_list;
-}
-
-void print_vector(std::vector<std::shared_ptr<Job>>& vec) {
-    for (std::shared_ptr<Job> item : vec) {
-        std::cout << *item << std::endl;
-    }
 }

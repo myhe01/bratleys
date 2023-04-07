@@ -1,5 +1,6 @@
 // Library includes
 #include <array>
+#include <chrono>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -13,9 +14,7 @@
 #include "node.hh"
 #include "tree.hh"
 
-// Global variables
-std::string prog_name;
-
+// Global constants
 int const DEFAULT_JOBS                  = 0;
 int const DEFAULT_MIN_ARRIVAL_TIME      = 0;
 int const DEFAULT_MAX_ARRIVAL_TIME      = std::numeric_limits<int>::max();
@@ -25,6 +24,10 @@ int const DEFAULT_MIN_DEADLINE          = 0;
 int const DEFAULT_MAX_DEADLINE          = std::numeric_limits<int>::max();
 int const DEFAULT_SEED                  = std::time(nullptr);
 
+// Global variables
+std::string prog_name;
+
+// Arguments struct
 typedef struct arguments {
     int jobs                            = DEFAULT_JOBS;
     int min_arrival_time                = DEFAULT_MIN_ARRIVAL_TIME;
@@ -161,11 +164,21 @@ int parse_arg(int argc, char * argv[], arguments_t * arguments) {
         }
     }
 
+    // Check for "correctness"
+    if ((arguments->min_arrival_time > arguments->max_arrival_time) || 
+        (arguments->min_computation_time > arguments->max_computation_time) ||
+        (arguments->min_deadline > arguments->max_deadline))
+    {
+        std::cout << prog_name << ": incorrect arguments" << std::endl;
+        return -1;
+    }
+
     return 0;
 }
 
 // Main
 int main(int argc, char * argv[]) {
+    auto timer_start = std::chrono::steady_clock::now();
     arguments_t arguments;
     
     // Parse command line arguments
@@ -187,109 +200,35 @@ int main(int argc, char * argv[]) {
 
     // Create list of jobs with random parameters
     std::vector<std::shared_ptr<Job>> jobs_list;
-    
     for (int i = 0; i < arguments.jobs; i++) {
         jobs_list.push_back(std::make_shared<Job>(i, arrival_time(rng),
                             computation_time(rng), deadline(rng)));
     }
 
-    // FIXME debug: print jobs
+    // Print jobs
+    std::cout << "------------------- Jobs to schedule: -------------------" << std::endl;
     for (std::shared_ptr<Job> jo : jobs_list) {
         std::cout << *jo << std::endl;
     }
-    std::cout << "--- END JOBS LIST ---" << std::endl << std::endl;
-
-    /* Job removal test
-    auto job_iter = jobs_list.begin();
-    job_iter++;
-    std::shared_ptr<Job> removed = *job_iter;
-
-    std::cout << "Job to remove: " << **job_iter << std::endl;
-
-    job_iter = jobs_list.erase(job_iter);
-    print_vector(jobs_list);
-
-    std::cout << "Putting it back..." << std::endl;
-
-    jobs_list.insert(job_iter, removed);
-    print_vector(jobs_list);
-    */
-
-    // Attempt to schedule jobs
+    std::cout << "--------------------- End jobs list ---------------------" << std::endl;
+    std::cout << std::endl;
+    
+    // Run the Bratley's algorithm scheduler
     Tree my_tr;
-    std::vector<std::shared_ptr<Job>> remaining;
-    remaining = my_tr.scheduleJobs(my_tr.getRoot(), jobs_list);
-    //std::cout << "remaining:" << std::endl;
-    //print_vector(remaining);
-
-    std::vector<std::shared_ptr<Node>> schedule;
-
-    if (!remaining.empty()) {
-        std::cout << "No feasible schedule found." << std::endl;
-    } else {
-        // Feasible schedule found
-        std::cout << "***** SCHEDULE FOUND *****" << std::endl;
-        schedule = my_tr.getSchedule();
-        for (int i = schedule.size() - 2; i >= 0; i--) {
-            std::cout << *(schedule.at(i)) << std::endl;
+    if (my_tr.runScheduler(jobs_list)) {
+        std::cout << "------------------- Feasible schedule: ------------------" << std::endl;
+        for (std::shared_ptr<Node> n : my_tr.getSchedule()) {
+            std::cout << *n << std::endl;
         }
-        std::cout << "**************************" << std::endl;
+        std::cout << "---------------------- End schedule ---------------------" << std::endl;
+        std::cout << "Overall finishing time: " << my_tr.getFinishingTime() << std::endl;
+    } else {
+        std::cout << "No feasible schedule found." << std::endl;
     }
 
-    
-
-    
-    //print_vector(schedule);
-
-
-
-    /*
-    std::shared_ptr<Job> j0 = std::make_shared<Job>(0, 0, 2, 2);
-    std::shared_ptr<Job> j1 = std::make_shared<Job>(1, 1, 2, 3);
-    std::shared_ptr<Job> j2 = std::make_shared<Job>(2, 3, 4, 5);
-    std::shared_ptr<Job> j3 = std::make_shared<Job>(3, 4, 1, 2);
-    std::shared_ptr<Job> j4 = std::make_shared<Job>(4, 4, 2, 2);
-
-    std::shared_ptr<Node> n0 = std::make_shared<Node>(j0); // Problem here
-    std::shared_ptr<Node> n1 = std::make_shared<Node>(j1);
-    std::shared_ptr<Node> n2 = std::make_shared<Node>(j2);
-    std::shared_ptr<Node> n3 = std::make_shared<Node>(j3);
-    std::shared_ptr<Node> n4 = std::make_shared<Node>(j4);
-    
-    n0->insertChild(n1);
-    n0->insertChild(n2);
-    n0->insertChild(n3);
-    n0->insertChild(n4);
- 
-    std::cout << "BEFORE" << std::endl;
-    n0->debugPrintChildren();
-
-    std::shared_ptr<Node> removed = n0->removeChild(3);
-
-    std::cout << "removed: " << *removed << std::endl;
-    std::cout << "removed's parent: " << removed->getParent() << std::endl; 
-
-    std::cout << "AFTER" << std::endl;
-    n0->debugPrintChildren();
-
-    n0->clearChildren();
-
-    std::cout << "CLEARED" << std::endl;
-    n0->debugPrintChildren();
-    */
-
-
-
-
-
-
-
-
-
-
-
-
-
+    // Print execution time
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - timer_start;
+    std::cout << "Execution time: " << elapsed.count() << "s" << std::endl;
 
     return EXIT_SUCCESS;
 }   
