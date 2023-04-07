@@ -187,16 +187,61 @@ int main(int argc, char * argv[]) {
 
     // Create list of jobs with random parameters
     std::vector<std::shared_ptr<Job>> jobs_list;
+    
     for (int i = 0; i < arguments.jobs; i++) {
         jobs_list.push_back(std::make_shared<Job>(i, arrival_time(rng),
                             computation_time(rng), deadline(rng)));
     }
 
-    Tree tr();
-
-    for (std::shared_ptr<Job> j : jobs_list) {
-        std::cout << *j << std::endl;
+    // FIXME debug: print jobs
+    for (std::shared_ptr<Job> jo : jobs_list) {
+        std::cout << *jo << std::endl;
     }
+    std::cout << "--- END JOBS LIST ---" << std::endl << std::endl;
+
+    /* Job removal test
+    auto job_iter = jobs_list.begin();
+    job_iter++;
+    std::shared_ptr<Job> removed = *job_iter;
+
+    std::cout << "Job to remove: " << **job_iter << std::endl;
+
+    job_iter = jobs_list.erase(job_iter);
+    print_vector(jobs_list);
+
+    std::cout << "Putting it back..." << std::endl;
+
+    jobs_list.insert(job_iter, removed);
+    print_vector(jobs_list);
+    */
+
+    // Attempt to schedule jobs
+    Tree my_tr;
+    std::vector<std::shared_ptr<Job>> remaining;
+    remaining = my_tr.scheduleJobs(my_tr.getRoot(), jobs_list);
+    //std::cout << "remaining:" << std::endl;
+    //print_vector(remaining);
+
+    std::vector<std::shared_ptr<Node>> schedule;
+
+    if (!remaining.empty()) {
+        std::cout << "No feasible schedule found." << std::endl;
+    } else {
+        // Feasible schedule found
+        std::cout << "***** SCHEDULE FOUND *****" << std::endl;
+        schedule = my_tr.getSchedule();
+        for (int i = schedule.size() - 2; i >= 0; i--) {
+            std::cout << *(schedule.at(i)) << std::endl;
+        }
+        std::cout << "**************************" << std::endl;
+    }
+
+    
+
+    
+    //print_vector(schedule);
+
+
 
     /*
     std::shared_ptr<Job> j0 = std::make_shared<Job>(0, 0, 2, 2);
@@ -215,7 +260,7 @@ int main(int argc, char * argv[]) {
     n0->insertChild(n2);
     n0->insertChild(n3);
     n0->insertChild(n4);
-
+ 
     std::cout << "BEFORE" << std::endl;
     n0->debugPrintChildren();
 
@@ -232,5 +277,19 @@ int main(int argc, char * argv[]) {
     std::cout << "CLEARED" << std::endl;
     n0->debugPrintChildren();
     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     return EXIT_SUCCESS;
 }   
