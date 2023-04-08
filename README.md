@@ -50,6 +50,24 @@ If specific options are not specified, they will default to the following values
 | `-D`   | `maxdeadline` | INT_MAX                     |
 | `-s`   | `seed`        | Current Unix time (seconds) |
 
+#### Considerations
+Attempting to perform an exhaustive search for a feasible schedule with large numbers of `NUM_JOBS` ($n \gtrsim 20$) results in the program allocating large amounts of memory and taking a long time to finish execution. Caution should be taken when deciding which arguments to pass to the program.
+
+Execution times and memory allocation were measured for the following options: ` -A5 -c1 -C3 -d4 -D15 -s6969`
+
+| `NUM_JOBS` | Memory allocated (MB) | Execution time (s) |
+| ------     | --------------------- | ------------------ |
+| 20         | 849.09                | 4.562              |
+| 21         | 1,535.88              | 7.818              |
+| 22         | 2,251.89              | 11.563             |
+| 23         | 3,357.87              | 16.556             |
+| 24         | 4,663.83              | 23.042             |
+| 25         | 19,638.66             | 103.091            |
+| 26         | 34,714.62             | 182.392            |
+| 27         | 45,201.29             | 236.625            |
+| 28         | n/a                   | 253.706            |
+
+
 ### As a Library
 Code may be used in accordance with the license.
 
