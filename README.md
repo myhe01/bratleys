@@ -53,7 +53,7 @@ If specific options are not specified, they will default to the following values
 #### Considerations
 Attempting to perform an exhaustive search for a feasible schedule with large numbers of `NUM_JOBS` ($n \gtrsim 20$) results in the program allocating large amounts of memory and taking a long time to finish execution. Caution should be taken when deciding which arguments to pass to the program.
 
-Execution times and memory allocation were measured for the following options: ` -A5 -c1 -C3 -d4 -D15 -s6969`
+Execution times and memory allocation were measured for the following options: `-A5 -c1 -C3 -d4 -D15 -s6969`
 
 | `NUM_JOBS` | Memory allocated (MB) | Execution time (s) |
 | ------     | --------------------- | ------------------ |
