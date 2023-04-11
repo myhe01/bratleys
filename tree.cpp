@@ -102,7 +102,7 @@ std::vector<std::shared_ptr<Job>> Tree::scheduleJobs(
             // nonfeasible somewhere. We need to put the current_node's job back on the
             // list and destroy current_node
             if (!ret_vector.empty()) {
-                // TODO: if the recursive call returns a list with stuff in it, and our
+                // If the recursive call returns a list with stuff in it, and our
                 // current node works, then we know the schedule failed and we need to
                 // try another job from the job list.
                 job_list.insert(job_iter, next_node->getJob());

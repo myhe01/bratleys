@@ -50,8 +50,24 @@ If specific options are not specified, they will default to the following values
 | `-D`   | `maxdeadline` | INT_MAX                     |
 | `-s`   | `seed`        | Current Unix time (seconds) |
 
-### Specifying an Input File
+### Considerations
+Attempting to perform an exhaustive search for a feasible schedule with large numbers of `NUM_JOBS` ($n \gtrsim 20$) results in the program allocating large amounts of memory and taking a long time to finish execution. Caution should be taken when deciding which arguments to pass to the program.
 
+Execution times and memory allocation were measured for the following options: `-A5 -c1 -C3 -d4 -D15 -s6969`
+
+| `NUM_JOBS` | Memory allocated (MB) | Execution time (s) |
+| ------     | --------------------- | ------------------ |
+| 20         | 849.09                | 4.562              |
+| 21         | 1,535.88              | 7.818              |
+| 22         | 2,251.89              | 11.563             |
+| 23         | 3,357.87              | 16.556             |
+| 24         | 4,663.83              | 23.042             |
+| 25         | 19,638.66             | 103.091            |
+| 26         | 34,714.62             | 182.392            |
+| 27         | 45,201.29             | 236.625            |
+| 28         | n/a                   | 253.706            |
+
+### Specifying an Input File
 If the user wishes to specify an input file, a readable file must be located in the directory of the compiled program. If the `-i` option is passed to specify an input file, `NUM_JOBS` must not be specified. 
 
 Each nonempty line in the input file represents one job to be scheduled. Each line must have comma-seperated values representing the arrival time, computation time, and deadline (in that order).
@@ -75,7 +91,7 @@ And the user would pass the following arguments
 ./bratleys -i input.txt
 ```
 
-It is up to the user to specify which and how many jobs they wish to create. Any other options passed are irrelevant, as the jobs to be scheduled are not randomly generated.
+It is up to the user to specify which and how many jobs they wish to create (see [considerations](#considerations)). Any other options passed are irrelevant, as the jobs to be scheduled are not randomly generated.
 
 ## Usage As a Library
 Code may be used in accordance with the license.
@@ -88,19 +104,24 @@ Code may be used in accordance with the license.
 | Tree  | `tree.cpp`  | `tree.hh` |
 
 ## To-do List
-- **README**
+- **Documentation**
     - Complete *Usage, As a Library*
-    - Complete *To-do List*
-- **main**
+    - Complete *To-do List* :heavy_check_mark:
+    - Document `main.cpp`
+    - Document `job.*`
+    - Document `node.*`
+    - Document `node.*`
+- **main** :heavy_check_mark:
     - Parse user arguments :heavy_check_mark:
-    - Check arguments for compatibility (e.g. make sure min <= max)
+    - Check arguments for compatibility and correctness :heavy_check_mark:
     - Limit arrival times, computation time, and deadlines :heavy_check_mark:
     - Create list of random Jobs based on user arguments :heavy_check_mark:
-    - Create list of Nodes based on list of random Jobs created
     - Create Tree with empty root :heavy_check_mark:
-    - Determine realizable schedule
-        - Print schedule if realizable
-        - Tell user if no realizable schedule exists
+    - Determine realizable schedule :heavy_check_mark:
+        - Print schedule if realizable :heavy_check_mark:
+            - Determine overall finishing time :heavy_check_mark:
+        - Tell user if no realizable schedule exists :heavy_check_mark:
+    - Measure execution time :heavy_check_mark:
     - Allow the user to input a list of predetermined jobs :heavy_check_mark:
 - **Job** :heavy_check_mark:
     - Constructor :heavy_check_mark:
@@ -111,24 +132,20 @@ Code may be used in accordance with the license.
     - Getters and setters :heavy_check_mark:
     - Parse for an ostream :heavy_check_mark:
     - `getJobTaskNumber()` :heavy_check_mark:
-    - `insertChild()` :heavy_check_mark:
-    - `removeChild()` :heavy_check_mark:
-    - `clearChildren()` :heavy_check_mark:
-- **Tree**
+    - `getJobArrivalTime()` :heavy_check_mark:
+    - `getJobComputationTime()` :heavy_check_mark:
+    - `getJobDeadline()` :heavy_check_mark:
+- **Tree** :heavy_check_mark:
     - Constructor :heavy_check_mark:
     - Getters and setters :heavy_check_mark:
-    - Scheduling algorithm
-        - Receive list of Nodes 
-        - Push Node onto tree, check if finish time exceeds deadline
-            - If $f_i > d_i$, return up to the Node before the last Node, root check
-            - Else continue until list of Nodes is exhausted
+    - `runScheduler()` (abstract start of scheduling algorithm) :heavy_check_mark:
+    - `scheduleJobs()` (recursive scheduling algorithm) :heavy_check_mark:
+        - Receive list of Nodes :heavy_check_mark:
+        - Construct next Node, check if next Node's finish time exceeds deadline :heavy_check_mark:
+            - If $f_i > d_i$, deconstruct the Node and try the next Job from the list :heavy_check_mark:
+                - If list of Jobs exhausted, return up to the parent Node  :heavy_check_mark:
+            - Else continue until list of Nodes is exhausted :heavy_check_mark:
         - Return realizable schedule :heavy_check_mark:
-    - Polish functions
-
-## Ideas
-- ~~Remove Nodes as we determine that they lead to an unrealizable schedule~~ :heavy_check_mark:
-- ~~Allow user to also pass lower limit for arrival time, computation time, and deadline~~ :heavy_check_mark:
-- ~~Allow user to pass a seed~~ :heavy_check_mark:
 
 ## Contributing
 
