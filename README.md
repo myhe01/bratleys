@@ -4,8 +4,7 @@ Created by Brendan College for EEE 4775 Real-time Systems.
 ## Description
 This repository contains an implementation and a simulator of Bratley's scheduling algorithm using only standard libraries (`std=C++20`). This repository was created for my EEE 4775 Real-time Systems course at the University of Central Florida.
 
-## Usage
-### As a Simulator
+## Usage a Simulator
 Clone this repository into your desired directory and `cd` into the project's directory,
 
 ```
@@ -22,22 +21,23 @@ make
 Finally, you're able to run the simulator with the below command and its arguments.
 
 ```
-./bratleys NUM_JOBS [-a minarrival] [-A maxarrival] [-c mincomp] [-C maxcomp] [-d mindeadline] [-D maxdeadline] [-s seed]
+./bratleys NUM_JOBS [-a minarrival] [-A maxarrival] [-c mincomp] [-C maxcomp] [-d mindeadline] [-D maxdeadline] [-i inputfile] [-s seed]
 ```
 
-#### Arguments
-- `NUM_JOBS` is a positive integer specifying the number of jobs the user wishes to create
+### Arguments
+- `NUM_JOBS` is a positive integer specifying the number of jobs the user wishes to create (not used when specifying an [input file](#specifying-an-input-file))
 
-#### Options
+### Options
 - `-a` allows the user to set the minimum arrival time of any one job by replacing `minarrival` with a positive integer
 - `-A` allows the user to set the maximum arrival time of any one job by replacing `maxarrival` with a positive integer
 - `-c` allows the user to set the minimum computation time of any one job by replacing `mincomp` with a positive integer
 - `-C` allows the user to set the maximum computation time of any one job by replacing `maxcomp` with a positive integer
 - `-d` allows the user to set the minimum absolute deadline of any one job by replacing `mindeadline` with a positive integer
 - `-D` allows the user to set the maximum absolute deadline of any one job by replacing `maxdeadline` with a positive integer
+- `-i` allows the user to specify an [input file](#specifying-an-input-file)
 - `-s` allows the user to set the seed of the random number generator by replacing `seed` with a positive integer
 
-#### Defaults
+### Defaults
 If specific options are not specified, they will default to the following values
 
 | Option | Variable      | Default Value               |
@@ -50,7 +50,34 @@ If specific options are not specified, they will default to the following values
 | `-D`   | `maxdeadline` | INT_MAX                     |
 | `-s`   | `seed`        | Current Unix time (seconds) |
 
-### As a Library
+### Specifying an Input File
+
+If the user wishes to specify an input file, a readable file must be located in the directory of the compiled program. If the `-i` option is passed to specify an input file, `NUM_JOBS` must not be specified. 
+
+Each nonempty line in the input file represents one job to be scheduled. Each line must have comma-seperated values representing the arrival time, computation time, and deadline (in that order).
+
+For example, if the user wishes to schedule the following jobs:
+|       | $J_0$ | $J_1$ | $J_2$ |
+| ----- | ----- | ----- | ----- |
+| $a_i$ | 0     | 1     | 3     |
+| $C_i$ | 2     | 3     | 5     |
+| $d_i$ | 3     | 7     | 14    |
+
+The input file (e.g. named `input.txt`) would contain the following:
+```
+0,2,3
+1,3,7
+3,5,14
+```
+
+And the user would pass the following arguments
+```
+./bratleys -i input.txt
+```
+
+It is up to the user to specify which and how many jobs they wish to create. Any other options passed are irrelevant, as the jobs to be scheduled are not randomly generated.
+
+## Usage As a Library
 Code may be used in accordance with the license.
 
 | Topic | Code        | Header    |
@@ -74,6 +101,7 @@ Code may be used in accordance with the license.
     - Determine realizable schedule
         - Print schedule if realizable
         - Tell user if no realizable schedule exists
+    - Allow the user to input a list of predetermined jobs :heavy_check_mark:
 - **Job** :heavy_check_mark:
     - Constructor :heavy_check_mark:
     - Getters and setters :heavy_check_mark:
