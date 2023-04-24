@@ -1,6 +1,8 @@
 # Bratley's Algoritm Simulator
 Created by Brendan College for EEE 4775 Real-time Systems.
 
+[![EEE 4775: Bratley's Algorithm Simulator](https://i.imgur.com/y00hCLp.png)](https://youtu.be/1EuEwRY2DWE "EEE 4775: Bratley's Algorithm Simulator")
+
 ## Description
 This repository contains an implementation and a simulator of Bratley's scheduling algorithm using only standard libraries (`std=C++20`). This repository was created for my EEE 4775 Real-time Systems course at the University of Central Florida.
 
@@ -105,12 +107,8 @@ Code may be used in accordance with the license.
 
 ## To-do List
 - **Documentation**
-    - Complete *Usage, As a Library*
     - Complete *To-do List* :heavy_check_mark:
-    - Document `main.cpp`
-    - Document `job.*`
-    - Document `node.*`
-    - Document `node.*`
+    - Complete video demonstration :heavy_check_mark:
 - **main** :heavy_check_mark:
     - Parse user arguments :heavy_check_mark:
     - Check arguments for compatibility and correctness :heavy_check_mark:
