@@ -106,7 +106,7 @@ Code may be used in accordance with the license.
 | Tree  | `tree.cpp`  | `tree.hh` |
 
 ## To-do List
-- **Documentation**
+- **Documentation** :heavy_check_mark:
     - Complete *To-do List* :heavy_check_mark:
     - Complete video demonstration :heavy_check_mark:
 - **main** :heavy_check_mark:
